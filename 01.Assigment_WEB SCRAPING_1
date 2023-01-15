@@ -1,0 +1,3759 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "b5dead94",
+   "metadata": {},
+   "source": [
+    "**1.Write a python program to display all the header tags from wikipedia.org.**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "5a483e68",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from bs4 import BeautifulSoup\n",
+    "import requests\n",
+    "import pandas as pd"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "40c27ca3",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<Response [200]>"
+      ]
+     },
+     "execution_count": 2,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "wiki = requests.get('https://en.wikipedia.org/wiki/Main_Page')\n",
+    "wiki"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "9ce3fa6a",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "con = BeautifulSoup(wiki.content)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "9628fb56",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "head = []\n",
+    "for i in con.find_all('span',class_=\"mw-headline\"):\n",
+    "    head.append(i.text)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "7bba2b22",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Header Tags/Headlines</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>Welcome to Wikipedia</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>From today's featured article</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>Did you know ...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>In the news</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>On this day</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>Today's featured picture</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>6</th>\n",
+       "      <td>Other areas of Wikipedia</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7</th>\n",
+       "      <td>Wikipedia's sister projects</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>8</th>\n",
+       "      <td>Wikipedia languages</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "           Header Tags/Headlines\n",
+       "0           Welcome to Wikipedia\n",
+       "1  From today's featured article\n",
+       "2               Did you know ...\n",
+       "3                    In the news\n",
+       "4                    On this day\n",
+       "5       Today's featured picture\n",
+       "6       Other areas of Wikipedia\n",
+       "7    Wikipedia's sister projects\n",
+       "8            Wikipedia languages"
+      ]
+     },
+     "execution_count": 5,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "header = pd.DataFrame({'Header Tags/Headlines':head})\n",
+    "header"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d5019810",
+   "metadata": {},
+   "source": [
+    "**2.Write a python program to display IMDB’s Top rated 100 movies’ data (i.e. name, rating, year of release)and make data frame.**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "fb164ff0",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<Response [200]>"
+      ]
+     },
+     "execution_count": 6,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "page = requests.get('https://www.imdb.com/search/title/?groups=top_100&sort=user_rating,desc')\n",
+    "page"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "44003374",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "con = BeautifulSoup(page.content)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "eac76f18",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "name = []\n",
+    "for i in con.find_all('h3',class_= \"lister-item-header\"):\n",
+    "    name.append(i.text.replace('\\n','').split('.')[1].split('(')[0])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "f957b01b",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "year = []\n",
+    "for i in con.find_all('span',class_=\"lister-item-year text-muted unbold\"):\n",
+    "    year.append(i.text.replace('(','').replace(')',''))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "6925f5fa",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "rating = []\n",
+    "for i in con.find_all('div', class_ = \"inline-block ratings-imdb-rating\"):\n",
+    "    rating.append(i.text.replace('\\n',''))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "3bd73582",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "data = pd.DataFrame({'Name':name, 'Year of Release':year, 'Rating':rating})"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "id": "de3229bb",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<Response [200]>"
+      ]
+     },
+     "execution_count": 12,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "page2 = requests.get('https://www.imdb.com/search/title/?groups=top_100&sort=user_rating,desc&start=51&ref_=adv_nxt')\n",
+    "page2"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "id": "0f037950",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "con1 = BeautifulSoup(page2.content)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "id": "3f9b6782",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "name = []\n",
+    "for i in con1.find_all('h3',class_= \"lister-item-header\"):\n",
+    "    name.append(i.text.replace('\\n','').split('.')[1].split('(')[0])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "id": "bb284330",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "year = []\n",
+    "for i in con1.find_all('span',class_=\"lister-item-year text-muted unbold\"):\n",
+    "    year.append(i.text.replace('(','').replace(')',''))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "id": "af4af520",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "rating = []\n",
+    "for i in con1.find_all('div', class_ = \"inline-block ratings-imdb-rating\"):\n",
+    "    rating.append(i.text.replace('\\n',''))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "id": "f28e779e",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "data1 = pd.DataFrame({'Name':name, 'Year of Release':year, 'Rating':rating})"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "id": "d92d0191",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "main = pd.concat([data,data1],axis = 0)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "id": "daa930ca",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>index</th>\n",
+       "      <th>Name</th>\n",
+       "      <th>Year of Release</th>\n",
+       "      <th>Rating</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>0</td>\n",
+       "      <td>The Shawshank Redemption</td>\n",
+       "      <td>1994</td>\n",
+       "      <td>9.3</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>1</td>\n",
+       "      <td>The Godfather</td>\n",
+       "      <td>1972</td>\n",
+       "      <td>9.2</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>2</td>\n",
+       "      <td>The Dark Knight</td>\n",
+       "      <td>2008</td>\n",
+       "      <td>9.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>3</td>\n",
+       "      <td>The Lord of the Rings: The Return of the King</td>\n",
+       "      <td>2003</td>\n",
+       "      <td>9.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>4</td>\n",
+       "      <td>The Godfather Part II</td>\n",
+       "      <td>1974</td>\n",
+       "      <td>9.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>...</th>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>95</th>\n",
+       "      <td>45</td>\n",
+       "      <td>Vertigo</td>\n",
+       "      <td>1958</td>\n",
+       "      <td>8.3</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>96</th>\n",
+       "      <td>46</td>\n",
+       "      <td>Lawrence of Arabia</td>\n",
+       "      <td>1962</td>\n",
+       "      <td>8.3</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>97</th>\n",
+       "      <td>47</td>\n",
+       "      <td>Citizen Kane</td>\n",
+       "      <td>1941</td>\n",
+       "      <td>8.3</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>98</th>\n",
+       "      <td>48</td>\n",
+       "      <td>Toy Story 3</td>\n",
+       "      <td>2010</td>\n",
+       "      <td>8.3</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>99</th>\n",
+       "      <td>49</td>\n",
+       "      <td>M - Eine Stadt sucht einen Mörder</td>\n",
+       "      <td>1931</td>\n",
+       "      <td>8.3</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>100 rows × 4 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "    index                                           Name Year of Release  \\\n",
+       "0       0                       The Shawshank Redemption            1994   \n",
+       "1       1                                  The Godfather            1972   \n",
+       "2       2                                The Dark Knight            2008   \n",
+       "3       3  The Lord of the Rings: The Return of the King            2003   \n",
+       "4       4                          The Godfather Part II            1974   \n",
+       "..    ...                                            ...             ...   \n",
+       "95     45                                        Vertigo            1958   \n",
+       "96     46                             Lawrence of Arabia            1962   \n",
+       "97     47                                   Citizen Kane            1941   \n",
+       "98     48                                    Toy Story 3            2010   \n",
+       "99     49              M - Eine Stadt sucht einen Mörder            1931   \n",
+       "\n",
+       "   Rating  \n",
+       "0     9.3  \n",
+       "1     9.2  \n",
+       "2     9.0  \n",
+       "3     9.0  \n",
+       "4     9.0  \n",
+       "..    ...  \n",
+       "95    8.3  \n",
+       "96    8.3  \n",
+       "97    8.3  \n",
+       "98    8.3  \n",
+       "99    8.3  \n",
+       "\n",
+       "[100 rows x 4 columns]"
+      ]
+     },
+     "execution_count": 19,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "main.reset_index()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "840cbac3",
+   "metadata": {},
+   "source": [
+    "**3.Write a python program to display IMDB’s Top rated 100 Indian movies’ data (i.e. name, rating, year of release) and make data frame.**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "id": "4eedc184",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<Response [200]>"
+      ]
+     },
+     "execution_count": 20,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "hindi = requests.get('https://www.imdb.com/list/ls009997493/')\n",
+    "hindi"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 21,
+   "id": "082da8af",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "conn = BeautifulSoup(hindi.content)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 22,
+   "id": "01ef7f9b",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "name = []\n",
+    "for i in conn.find_all('h3',class_=\"lister-item-header\"):\n",
+    "    name.append(i.text.replace('\\n','').split('.')[1].split('(')[0])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 23,
+   "id": "1b764a02",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "rate = []\n",
+    "for i in conn.find_all('div',class_='ipl-rating-star small'):\n",
+    "    rate.append(i.text.replace('\\n',''))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 24,
+   "id": "b3c15573",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "year = []\n",
+    "for i in conn.find_all('span', class_ = 'lister-item-year text-muted unbold'):\n",
+    "    year.append(i.text.replace('(','').replace(')',''))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 25,
+   "id": "2a4cb861",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "100 Top Rated IBDM Hindi Movies\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Name</th>\n",
+       "      <th>Year</th>\n",
+       "      <th>Rating</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>Rang De Basanti</td>\n",
+       "      <td>2006</td>\n",
+       "      <td>8.1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>3 Idiots</td>\n",
+       "      <td>2009</td>\n",
+       "      <td>8.4</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>Taare Zameen Par</td>\n",
+       "      <td>2007</td>\n",
+       "      <td>8.3</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>Dil Chahta Hai</td>\n",
+       "      <td>2001</td>\n",
+       "      <td>8.1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>Swades: We, the People</td>\n",
+       "      <td>2004</td>\n",
+       "      <td>8.2</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>...</th>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>95</th>\n",
+       "      <td>Wake Up Sid</td>\n",
+       "      <td>2009</td>\n",
+       "      <td>7.6</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>96</th>\n",
+       "      <td>Rangeela</td>\n",
+       "      <td>1995</td>\n",
+       "      <td>7.4</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>97</th>\n",
+       "      <td>Shatranj Ke Khilari</td>\n",
+       "      <td>1977</td>\n",
+       "      <td>7.5</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>98</th>\n",
+       "      <td>Pyaar Ka Punchnama</td>\n",
+       "      <td>2011</td>\n",
+       "      <td>7.6</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>99</th>\n",
+       "      <td>Ek Hasina Thi</td>\n",
+       "      <td>2004</td>\n",
+       "      <td>7.5</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>100 rows × 3 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                      Name  Year Rating\n",
+       "0          Rang De Basanti  2006    8.1\n",
+       "1                 3 Idiots  2009    8.4\n",
+       "2         Taare Zameen Par  2007    8.3\n",
+       "3           Dil Chahta Hai  2001    8.1\n",
+       "4   Swades: We, the People  2004    8.2\n",
+       "..                     ...   ...    ...\n",
+       "95             Wake Up Sid  2009    7.6\n",
+       "96                Rangeela  1995    7.4\n",
+       "97     Shatranj Ke Khilari  1977    7.5\n",
+       "98      Pyaar Ka Punchnama  2011    7.6\n",
+       "99           Ek Hasina Thi  2004    7.5\n",
+       "\n",
+       "[100 rows x 3 columns]"
+      ]
+     },
+     "execution_count": 25,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "data_hi = pd.DataFrame({'Name':name, 'Year':year, 'Rating':rate})\n",
+    "print('100 Top Rated IBDM Hindi Movies')\n",
+    "data_hi"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "82b24ba5",
+   "metadata": {},
+   "source": [
+    "**4.Write s python program to display list of respected former presidents of India(i.e. Name , Term of office) from https://presidentofindia.nic.in/former-presidents.htm.**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 33,
+   "id": "5f6feb2a",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<Response [200]>"
+      ]
+     },
+     "execution_count": 33,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "pre = requests.get('https://presidentofindia.nic.in/former-presidents.htm')\n",
+    "pre"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 34,
+   "id": "b50103e0",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "conn = BeautifulSoup(pre.content)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 35,
+   "id": "ab32a7a6",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "name = []\n",
+    "for i in conn.find_all('h3'):\n",
+    "    name.append(i.text)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 36,
+   "id": "f74074a3",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import re\n",
+    "of = []\n",
+    "for i in conn.find_all('div',class_=\"presidentListing\"):\n",
+    "    x = i.text.replace('\\n','').split(')')[1].replace('Term of Office:','')\n",
+    "    y = re.sub(r\"http\\S+\", \"\", x)\n",
+    "    of.append(y)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 37,
+   "id": "2d68b8d9",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Former Presidents List\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Former Presidents</th>\n",
+       "      <th>Term of Office</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>Shri Ram Nath Kovind (birth - 1945)</td>\n",
+       "      <td>25 July, 2017 to 25 July, 2022</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>Shri Pranab Mukherjee (1935-2020)</td>\n",
+       "      <td>25 July, 2012 to 25 July, 2017</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>Smt Pratibha Devisingh Patil (birth - 1934)</td>\n",
+       "      <td>25 July, 2007 to 25 July, 2012</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>DR. A.P.J. Abdul Kalam (1931-2015)</td>\n",
+       "      <td>25 July, 2002 to 25 July, 2007</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>Shri K. R. Narayanan (1920 - 2005)</td>\n",
+       "      <td>25 July, 1997 to 25 July, 2002</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>Dr Shankar Dayal Sharma (1918-1999)</td>\n",
+       "      <td>25 July, 1992 to 25 July, 1997</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>6</th>\n",
+       "      <td>Shri R Venkataraman (1910-2009)</td>\n",
+       "      <td>25 July, 1987 to 25 July, 1992</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7</th>\n",
+       "      <td>Giani Zail Singh (1916-1994)</td>\n",
+       "      <td>25 July, 1982 to 25 July, 1987</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>8</th>\n",
+       "      <td>Shri Neelam Sanjiva Reddy (1913-1996)</td>\n",
+       "      <td>25 July, 1977 to 25 July, 1982</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>9</th>\n",
+       "      <td>Dr. Fakhruddin Ali Ahmed (1905-1977)</td>\n",
+       "      <td>24 August, 1974 to 11 February, 1977</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>10</th>\n",
+       "      <td>Shri Varahagiri Venkata Giri (1894-1980)</td>\n",
+       "      <td>3 May, 1969 to 20 July, 1969 and 24 August, 1...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>11</th>\n",
+       "      <td>Dr. Zakir Husain (1897-1969)</td>\n",
+       "      <td>13 May, 1967 to 3 May, 1969</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>12</th>\n",
+       "      <td>Dr. Sarvepalli Radhakrishnan (1888-1975)</td>\n",
+       "      <td>13 May, 1962 to 13 May, 1967</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>13</th>\n",
+       "      <td>Dr. Rajendra Prasad (1884-1963)</td>\n",
+       "      <td>26 January, 1950 to 13 May, 1962</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                              Former Presidents  \\\n",
+       "0           Shri Ram Nath Kovind (birth - 1945)   \n",
+       "1             Shri Pranab Mukherjee (1935-2020)   \n",
+       "2   Smt Pratibha Devisingh Patil (birth - 1934)   \n",
+       "3            DR. A.P.J. Abdul Kalam (1931-2015)   \n",
+       "4            Shri K. R. Narayanan (1920 - 2005)   \n",
+       "5           Dr Shankar Dayal Sharma (1918-1999)   \n",
+       "6               Shri R Venkataraman (1910-2009)   \n",
+       "7                  Giani Zail Singh (1916-1994)   \n",
+       "8         Shri Neelam Sanjiva Reddy (1913-1996)   \n",
+       "9          Dr. Fakhruddin Ali Ahmed (1905-1977)   \n",
+       "10     Shri Varahagiri Venkata Giri (1894-1980)   \n",
+       "11                 Dr. Zakir Husain (1897-1969)   \n",
+       "12     Dr. Sarvepalli Radhakrishnan (1888-1975)   \n",
+       "13             Dr. Rajendra Prasad (1884-1963)    \n",
+       "\n",
+       "                                       Term of Office  \n",
+       "0                     25 July, 2017 to 25 July, 2022   \n",
+       "1                     25 July, 2012 to 25 July, 2017   \n",
+       "2                     25 July, 2007 to 25 July, 2012   \n",
+       "3                     25 July, 2002 to 25 July, 2007   \n",
+       "4                     25 July, 1997 to 25 July, 2002   \n",
+       "5                     25 July, 1992 to 25 July, 1997   \n",
+       "6                     25 July, 1987 to 25 July, 1992   \n",
+       "7                     25 July, 1982 to 25 July, 1987   \n",
+       "8                     25 July, 1977 to 25 July, 1982   \n",
+       "9                24 August, 1974 to 11 February, 1977  \n",
+       "10   3 May, 1969 to 20 July, 1969 and 24 August, 1...  \n",
+       "11                        13 May, 1967 to 3 May, 1969  \n",
+       "12                       13 May, 1962 to 13 May, 1967  \n",
+       "13                   26 January, 1950 to 13 May, 1962  "
+      ]
+     },
+     "execution_count": 37,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "presi = pd.DataFrame({'Former Presidents':name, 'Term of Office':of})\n",
+    "print('Former Presidents List')\n",
+    "presi"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a0601c8f",
+   "metadata": {},
+   "source": [
+    "**5).Write a python program to scrape cricket rankings from icc-cricket.com. You have to scrape:**\n",
+    "\n",
+    "**a) Top 10 ODI teams in men’s cricket along with the records for matches, points and rating.**\n",
+    "\n",
+    "**b) Top 10 ODI Batsmen along with the records of their team and rating.**\n",
+    "\n",
+    "**c) Top 10 ODI bowlers along with the records of their team and rating.**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 38,
+   "id": "23fb7193",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<Response [200]>"
+      ]
+     },
+     "execution_count": 38,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "cri = requests.get('https://www.icc-cricket.com/rankings/mens/team-rankings/odi')\n",
+    "cri"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 39,
+   "id": "63f9d5c2",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "conn = BeautifulSoup(cri.content)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 40,
+   "id": "5cc424c5",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "team = []\n",
+    "for i in conn.find_all('span',class_=\"u-hide-phablet\"):\n",
+    "    team.append(i.text)\n",
+    "del team[10:]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 43,
+   "id": "6eed89cb",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "rate = []\n",
+    "for i in conn.find_all('td',class_=\"table-body__cell u-text-right rating\"):\n",
+    "    rate.append(i.text)\n",
+    "rate.insert(0,'117')\n",
+    "del rate[10:]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 42,
+   "id": "4ff2e156",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "match = []\n",
+    "for i in conn.find_all('tr',class_=\"table-body\"):\n",
+    "    match.append(i.text.split()[-3])\n",
+    "match.insert(0,'26')\n",
+    "del match[10:]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 44,
+   "id": "79b280da",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "point = []\n",
+    "for i in conn.find_all('tr',class_=\"table-body\"):\n",
+    "    point.append(i.text.split()[-2])\n",
+    "point.insert(0,'3,045')\n",
+    "del point[10:]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 45,
+   "id": "8fa31ae3",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\tTop 10 ODI Teams \t\n",
+      "------------------------------\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Team Name</th>\n",
+       "      <th>Matches</th>\n",
+       "      <th>Points</th>\n",
+       "      <th>Rating</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>New Zealand</td>\n",
+       "      <td>26</td>\n",
+       "      <td>3,045</td>\n",
+       "      <td>117</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>England</td>\n",
+       "      <td>30</td>\n",
+       "      <td>3,400</td>\n",
+       "      <td>113</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>Australia</td>\n",
+       "      <td>32</td>\n",
+       "      <td>3,572</td>\n",
+       "      <td>112</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>India</td>\n",
+       "      <td>41</td>\n",
+       "      <td>4,515</td>\n",
+       "      <td>110</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>Pakistan</td>\n",
+       "      <td>25</td>\n",
+       "      <td>2,649</td>\n",
+       "      <td>106</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>South Africa</td>\n",
+       "      <td>24</td>\n",
+       "      <td>2,392</td>\n",
+       "      <td>100</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>6</th>\n",
+       "      <td>Bangladesh</td>\n",
+       "      <td>33</td>\n",
+       "      <td>3,129</td>\n",
+       "      <td>95</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7</th>\n",
+       "      <td>Sri Lanka</td>\n",
+       "      <td>34</td>\n",
+       "      <td>2,976</td>\n",
+       "      <td>88</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>8</th>\n",
+       "      <td>Afghanistan</td>\n",
+       "      <td>20</td>\n",
+       "      <td>1,419</td>\n",
+       "      <td>71</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>9</th>\n",
+       "      <td>West Indies</td>\n",
+       "      <td>41</td>\n",
+       "      <td>2,902</td>\n",
+       "      <td>71</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "      Team Name Matches Points Rating\n",
+       "0   New Zealand      26  3,045    117\n",
+       "1       England      30  3,400    113\n",
+       "2     Australia      32  3,572    112\n",
+       "3         India      41  4,515    110\n",
+       "4      Pakistan      25  2,649    106\n",
+       "5  South Africa      24  2,392    100\n",
+       "6    Bangladesh      33  3,129     95\n",
+       "7     Sri Lanka      34  2,976     88\n",
+       "8   Afghanistan      20  1,419     71\n",
+       "9   West Indies      41  2,902     71"
+      ]
+     },
+     "execution_count": 45,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "oditeam = pd.DataFrame({'Team Name':team,'Matches':match, 'Points':point, 'Rating':rate})\n",
+    "print('\\tTop 10 ODI Teams \\t')\n",
+    "print('-'*30)\n",
+    "oditeam"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c098ef2f",
+   "metadata": {},
+   "source": [
+    "**b) Top 10 ODI Batsmen along with the records of their team and rating.**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 46,
+   "id": "dbfd84e1",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<Response [200]>"
+      ]
+     },
+     "execution_count": 46,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "bat = requests.get('https://www.icc-cricket.com/rankings/mens/player-rankings/odi/batting')\n",
+    "bat"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 47,
+   "id": "ddfc75bf",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "conn = BeautifulSoup(bat.content)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 48,
+   "id": "0da62ad1",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "'Babar Azam'"
+      ]
+     },
+     "execution_count": 48,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "p = conn.find('td',class_=\"rankings-block__top-player-container\")\n",
+    "pl = p.text.replace('\\n','')\n",
+    "pl"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 49,
+   "id": "3d63225d",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "'PAK                    '"
+      ]
+     },
+     "execution_count": 49,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "f = conn.find('div',class_=\"rankings-block__banner--nationality\")\n",
+    "te = f.text.replace('\\n','')\n",
+    "te"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 50,
+   "id": "ac72d33f",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "'891'"
+      ]
+     },
+     "execution_count": 50,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "r =conn.find('td',class_=\"u-text-left\")\n",
+    "po = r.text.replace('\\n','')\n",
+    "po"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 51,
+   "id": "d7d1f502",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "player = []\n",
+    "for i in conn.find_all('td',class_=\"table-body__cell rankings-table__name name\"):\n",
+    "    player.append(i.text.replace('\\n',''))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 52,
+   "id": "53613e39",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "team = []\n",
+    "for i in conn.find_all('span',class_=\"table-body__logo-text\"):\n",
+    "    team.append(i.text)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 53,
+   "id": "65745f37",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "point = []\n",
+    "for i in conn.find_all('td',class_=\"table-body__cell rating\"):\n",
+    "    point.append(i.text)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 54,
+   "id": "538a91c9",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "batting = pd.DataFrame({'Player Name':player, 'Team':team, 'Points':point})"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 55,
+   "id": "e3c105d1",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Player Name                 Babar Azam\n",
+       "Team           PAK                    \n",
+       "Points                             891\n",
+       "dtype: object"
+      ]
+     },
+     "execution_count": 55,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "h = {'Player Name': pl,'Team':te,'Points':po}\n",
+    "vr = pd.Series(h)\n",
+    "vr"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 56,
+   "id": "3e101986",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "uh = pd.DataFrame([vr], index = [0])\n",
+    "batting = pd.concat([uh,batting])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 57,
+   "id": "6c6f5922",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\tTop 10 ODI Batsman \t\n",
+      "------------------------------\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>index</th>\n",
+       "      <th>Player Name</th>\n",
+       "      <th>Team</th>\n",
+       "      <th>Points</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>0</td>\n",
+       "      <td>Babar Azam</td>\n",
+       "      <td>PAK</td>\n",
+       "      <td>891</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>0</td>\n",
+       "      <td>Rassie van der Dussen</td>\n",
+       "      <td>SA</td>\n",
+       "      <td>766</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>1</td>\n",
+       "      <td>Imam-ul-Haq</td>\n",
+       "      <td>PAK</td>\n",
+       "      <td>764</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>2</td>\n",
+       "      <td>Quinton de Kock</td>\n",
+       "      <td>SA</td>\n",
+       "      <td>759</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>3</td>\n",
+       "      <td>David Warner</td>\n",
+       "      <td>AUS</td>\n",
+       "      <td>747</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>4</td>\n",
+       "      <td>Virat Kohli</td>\n",
+       "      <td>IND</td>\n",
+       "      <td>726</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>6</th>\n",
+       "      <td>5</td>\n",
+       "      <td>Steve Smith</td>\n",
+       "      <td>AUS</td>\n",
+       "      <td>719</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7</th>\n",
+       "      <td>6</td>\n",
+       "      <td>Rohit Sharma</td>\n",
+       "      <td>IND</td>\n",
+       "      <td>715</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>8</th>\n",
+       "      <td>7</td>\n",
+       "      <td>Jonny Bairstow</td>\n",
+       "      <td>ENG</td>\n",
+       "      <td>710</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>9</th>\n",
+       "      <td>8</td>\n",
+       "      <td>Fakhar Zaman</td>\n",
+       "      <td>PAK</td>\n",
+       "      <td>695</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   index            Player Name                     Team Points\n",
+       "0      0             Babar Azam  PAK                        891\n",
+       "1      0  Rassie van der Dussen                       SA    766\n",
+       "2      1            Imam-ul-Haq                      PAK    764\n",
+       "3      2        Quinton de Kock                       SA    759\n",
+       "4      3           David Warner                      AUS    747\n",
+       "5      4            Virat Kohli                      IND    726\n",
+       "6      5            Steve Smith                      AUS    719\n",
+       "7      6           Rohit Sharma                      IND    715\n",
+       "8      7         Jonny Bairstow                      ENG    710\n",
+       "9      8           Fakhar Zaman                      PAK    695"
+      ]
+     },
+     "execution_count": 57,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "print('\\tTop 10 ODI Batsman \\t')\n",
+    "print('-'*30)\n",
+    "batting.reset_index()[0:10]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cc6e73df",
+   "metadata": {},
+   "source": [
+    "**c) Top 10 ODI bowlers along with the records of their team and rating.**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 60,
+   "id": "abcb4bb6",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<Response [200]>"
+      ]
+     },
+     "execution_count": 60,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "bowl = requests.get('https://www.icc-cricket.com/rankings/mens/player-rankings/odi/bowling')\n",
+    "bowl"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 61,
+   "id": "089b42c1",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "conn = BeautifulSoup(bowl.content)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 62,
+   "id": "f85ef988",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "name = []\n",
+    "for i in conn.find_all('td',class_=\"table-body__cell rankings-table__name name\"):\n",
+    "    name.append(i.text.replace('\\n',''))\n",
+    "name.insert(0,'Trent Boult')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 63,
+   "id": "ca090a25",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "team = []\n",
+    "for i in conn.find_all('span',class_=\"table-body__logo-text\"):\n",
+    "    team.append(i.text)\n",
+    "team.insert(0,'NZ')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 64,
+   "id": "b0a107e0",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "rat = []\n",
+    "for i in conn.find_all('td',class_=\"table-body__cell rating\"):\n",
+    "    rat.append(i.text)\n",
+    "rat.insert(0,'744')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 65,
+   "id": "1beecf0d",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\tTop 10 ODI Bowler \t\n",
+      "------------------------------\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Bowler Name</th>\n",
+       "      <th>Team</th>\n",
+       "      <th>Rating</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>Trent Boult</td>\n",
+       "      <td>NZ</td>\n",
+       "      <td>744</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>Josh Hazlewood</td>\n",
+       "      <td>AUS</td>\n",
+       "      <td>727</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>Mitchell Starc</td>\n",
+       "      <td>AUS</td>\n",
+       "      <td>665</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>Rashid Khan</td>\n",
+       "      <td>AFG</td>\n",
+       "      <td>659</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>Matt Henry</td>\n",
+       "      <td>NZ</td>\n",
+       "      <td>656</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>Adam Zampa</td>\n",
+       "      <td>AUS</td>\n",
+       "      <td>655</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>6</th>\n",
+       "      <td>Shaheen Afridi</td>\n",
+       "      <td>PAK</td>\n",
+       "      <td>654</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7</th>\n",
+       "      <td>Shakib Al Hasan</td>\n",
+       "      <td>BAN</td>\n",
+       "      <td>652</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>8</th>\n",
+       "      <td>Mustafizur Rahman</td>\n",
+       "      <td>BAN</td>\n",
+       "      <td>638</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>9</th>\n",
+       "      <td>Mujeeb Ur Rahman</td>\n",
+       "      <td>AFG</td>\n",
+       "      <td>637</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "         Bowler Name Team Rating\n",
+       "0        Trent Boult   NZ    744\n",
+       "1     Josh Hazlewood  AUS    727\n",
+       "2     Mitchell Starc  AUS    665\n",
+       "3        Rashid Khan  AFG    659\n",
+       "4         Matt Henry   NZ    656\n",
+       "5         Adam Zampa  AUS    655\n",
+       "6     Shaheen Afridi  PAK    654\n",
+       "7    Shakib Al Hasan  BAN    652\n",
+       "8  Mustafizur Rahman  BAN    638\n",
+       "9   Mujeeb Ur Rahman  AFG    637"
+      ]
+     },
+     "execution_count": 65,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "odibat = pd.DataFrame({'Bowler Name':name, 'Team':team, 'Rating':rat})\n",
+    "print('\\tTop 10 ODI Bowler \\t')\n",
+    "print('-'*30)\n",
+    "odibat[0:10]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4c8a4c03",
+   "metadata": {},
+   "source": [
+    "**6. Write a python program to scrape cricket rankings from icc-cricket.com. You have to scrape:**\n",
+    "\n",
+    "**a) Top 10 ODI teams in women’s cricket along with the records for matches, points and rating.**\n",
+    "\n",
+    "**b) Top 10 women’s ODI Batting players along with the records of their team and rating.**\n",
+    "\n",
+    "**c) Top 10 women’s ODI all-rounder along with the records of their team and rating.'''**"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "5adbdee2",
+   "metadata": {},
+   "source": [
+    "\n",
+    "\n",
+    "**a) Top 10 ODI teams in women’s cricket along with the records for matches, points and rating.**\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 70,
+   "id": "ea7990b8",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<Response [200]>"
+      ]
+     },
+     "execution_count": 70,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "page = requests.get('https://www.icc-cricket.com/rankings/womens/team-rankings/odi')\n",
+    "page"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 71,
+   "id": "ef6b8f42",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "soup = BeautifulSoup(page.content)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 73,
+   "id": "514a582c",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['18',\n",
+       " '3,061',\n",
+       " '28',\n",
+       " '3,342',\n",
+       " '26',\n",
+       " '3,098',\n",
+       " '27',\n",
+       " '2,820',\n",
+       " '25',\n",
+       " '2,553',\n",
+       " '27',\n",
+       " '2,535',\n",
+       " '13',\n",
+       " '983',\n",
+       " '8',\n",
+       " '572',\n",
+       " '24',\n",
+       " '1,519',\n",
+       " '8',\n",
+       " '353',\n",
+       " '14',\n",
+       " '548',\n",
+       " '9',\n",
+       " '0',\n",
+       " '8',\n",
+       " '0']"
+      ]
+     },
+     "execution_count": 73,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "mt=[]\n",
+    "k=soup.find(\"td\",class_=\"rankings-block__banner--matches\").get_text()\n",
+    "mt.append(k)\n",
+    "l=soup.find(\"td\",class_=\"rankings-block__banner--points\").get_text()\n",
+    "mt.append(l)\n",
+    "for i in soup.find_all(\"td\",class_=\"table-body__cell u-center-text\"):\n",
+    "    mt.append(i.text)\n",
+    "mt"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 74,
+   "id": "7c1bc04c",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "matches=[]\n",
+    "points=[]\n",
+    "for i in range(len(mt)):\n",
+    "    if (i%2)==0:\n",
+    "        matches.append(mt[i])\n",
+    "    else:\n",
+    "        points.append(mt[i])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 75,
+   "id": "9aeb099c",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['18', '28', '26', '27', '25', '27', '13', '8', '24', '8', '14', '9', '8']"
+      ]
+     },
+     "execution_count": 75,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "matches"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 76,
+   "id": "3f34423d",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['3,061',\n",
+       " '3,342',\n",
+       " '3,098',\n",
+       " '2,820',\n",
+       " '2,553',\n",
+       " '2,535',\n",
+       " '983',\n",
+       " '572',\n",
+       " '1,519',\n",
+       " '353',\n",
+       " '548',\n",
+       " '0',\n",
+       " '0']"
+      ]
+     },
+     "execution_count": 76,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "points"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 71,
+   "id": "eed4ff7b",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "point = []\n",
+    "for i in conn.find_all('tr',class_=\"table-body\"):\n",
+    "    point.append(i.text.split()[-2])\n",
+    "point.insert(0,'3,061')\n",
+    "del point[11:]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 77,
+   "id": "fb808a78",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['\\n                            170\\n                            \\n\\n',\n",
+       " '119',\n",
+       " '119',\n",
+       " '104',\n",
+       " '102',\n",
+       " '94',\n",
+       " '76',\n",
+       " '72',\n",
+       " '63',\n",
+       " '44',\n",
+       " '39',\n",
+       " '0',\n",
+       " '0']"
+      ]
+     },
+     "execution_count": 77,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "ratings=[]\n",
+    "k=soup.find(\"td\",class_=\"rankings-block__banner--rating u-text-right\")\n",
+    "ratings.append(k.text)\n",
+    "for i in soup.find_all(\"td\",class_=\"table-body__cell u-text-right rating\"):\n",
+    "    ratings.append(i.text)\n",
+    "ratings"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 73,
+   "id": "6da029a6",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Top 10 ODI Teams Women\n",
+      "------------------------------\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Team Name</th>\n",
+       "      <th>Matches</th>\n",
+       "      <th>Points</th>\n",
+       "      <th>Rating</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>Australia</td>\n",
+       "      <td>18</td>\n",
+       "      <td>3,061</td>\n",
+       "      <td>170</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>England</td>\n",
+       "      <td>28</td>\n",
+       "      <td>3,342</td>\n",
+       "      <td>119</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>South Africa</td>\n",
+       "      <td>26</td>\n",
+       "      <td>3,098</td>\n",
+       "      <td>119</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>India</td>\n",
+       "      <td>27</td>\n",
+       "      <td>2,820</td>\n",
+       "      <td>104</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>New Zealand</td>\n",
+       "      <td>25</td>\n",
+       "      <td>2,553</td>\n",
+       "      <td>102</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>West Indies</td>\n",
+       "      <td>27</td>\n",
+       "      <td>2,535</td>\n",
+       "      <td>94</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>6</th>\n",
+       "      <td>Bangladesh</td>\n",
+       "      <td>13</td>\n",
+       "      <td>983</td>\n",
+       "      <td>76</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7</th>\n",
+       "      <td>Thailand</td>\n",
+       "      <td>8</td>\n",
+       "      <td>572</td>\n",
+       "      <td>72</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>8</th>\n",
+       "      <td>Pakistan</td>\n",
+       "      <td>24</td>\n",
+       "      <td>1,519</td>\n",
+       "      <td>63</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>9</th>\n",
+       "      <td>Sri Lanka</td>\n",
+       "      <td>8</td>\n",
+       "      <td>353</td>\n",
+       "      <td>44</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>10</th>\n",
+       "      <td>Ireland</td>\n",
+       "      <td>14</td>\n",
+       "      <td>548</td>\n",
+       "      <td>39</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "       Team Name Matches Points Rating\n",
+       "0      Australia      18  3,061    170\n",
+       "1        England      28  3,342    119\n",
+       "2   South Africa      26  3,098    119\n",
+       "3          India      27  2,820    104\n",
+       "4    New Zealand      25  2,553    102\n",
+       "5    West Indies      27  2,535     94\n",
+       "6     Bangladesh      13    983     76\n",
+       "7       Thailand       8    572     72\n",
+       "8       Pakistan      24  1,519     63\n",
+       "9      Sri Lanka       8    353     44\n",
+       "10       Ireland      14    548     39"
+      ]
+     },
+     "execution_count": 73,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "women = pd.DataFrame({'Team Name':team, 'Matches':match, 'Points':point, 'Rating':rate})\n",
+    "print('Top 10 ODI Teams Women')\n",
+    "print('-'*30)\n",
+    "women"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "fbbc8551",
+   "metadata": {},
+   "source": [
+    "**b) Top 10 women’s ODI Batting players along with the records of their team and rating.**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 126,
+   "id": "bc05ed08",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<Response [200]>"
+      ]
+     },
+     "execution_count": 126,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "bating = requests.get('https://www.icc-cricket.com/rankings/womens/player-rankings/odi/batting')\n",
+    "bating"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 127,
+   "id": "c8deed5f",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "conn = BeautifulSoup(bating.content)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 142,
+   "id": "f2c1745b",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "player = []\n",
+    "for i in conn.find_all('div',class_=\"rankings-block__banner--rating\"):\n",
+    "    player.append(i.text.replace('\\n',''))\n",
+    "player.insert(0,'Alyssa Healy')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 143,
+   "id": "03ba4aab",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "team = []\n",
+    "for i in conn.find_all('div',class_=\"rankings-block__banner--nationality\"):\n",
+    "    team.append(i.text)\n",
+    "team.insert(0,'AUS')\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 144,
+   "id": "52ac3d99",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "point = []\n",
+    "for i in conn.find_all('div',class_=\"rankings-block__banner--rating\"):\n",
+    "    point.append(i.text)\n",
+    "point.insert(0,'785')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 145,
+   "id": "7a35b849",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Top 10 ODI Batting Women\n",
+      "------------------------------\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Player Name</th>\n",
+       "      <th>Team</th>\n",
+       "      <th>Points</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>Alyssa Healy</td>\n",
+       "      <td>AUS</td>\n",
+       "      <td>785</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>785</td>\n",
+       "      <td>\\n\\nAUS\\n</td>\n",
+       "      <td>785</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "    Player Name                           Team Points\n",
+       "0  Alyssa Healy                            AUS    785\n",
+       "1           785  \\n\\nAUS\\n                        785"
+      ]
+     },
+     "execution_count": 145,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "womenbat = pd.DataFrame({'Player Name':player, 'Team':team, 'Points':point})\n",
+    "print('Top 10 ODI Batting Women')\n",
+    "print('-'*30)\n",
+    "womenbat"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a2ce7d97",
+   "metadata": {},
+   "source": [
+    "**c) Top 10 women’s ODI all-rounder along with the records of their team and rating.**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 116,
+   "id": "9e5a93a2",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<Response [200]>"
+      ]
+     },
+     "execution_count": 116,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "\n",
+    "womenbowl = requests.get('https://www.icc-cricket.com/rankings/womens/player-rankings/odi/bowling')\n",
+    "womenbowl"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 117,
+   "id": "2674499e",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "conn = BeautifulSoup(womenbowl.content)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 118,
+   "id": "01b6525a",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "name = []\n",
+    "for i in conn.find_all('td',class_=\"table-body__cell rankings-table__name name\"):\n",
+    "    name.append(i.text.replace('\\n',''))\n",
+    "name.insert(0,'Sophie Ecclestone')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 119,
+   "id": "08092989",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "team = []\n",
+    "for i in conn.find_all('span',class_=\"table-body__logo-text\"):\n",
+    "    team.append(i.text)\n",
+    "team.insert(0,'ENG')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 120,
+   "id": "d583835f",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "rat = []\n",
+    "for i in conn.find_all('td',class_=\"table-body__cell rating\"):\n",
+    "    rat.append(i.text)\n",
+    "rat.insert(0,'751')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 121,
+   "id": "50d542ae",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Top 10 ODI Bowling Women\n",
+      "------------------------------\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Player Name</th>\n",
+       "      <th>Team</th>\n",
+       "      <th>Rating</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>Sophie Ecclestone</td>\n",
+       "      <td>ENG</td>\n",
+       "      <td>751</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>Jess Jonassen</td>\n",
+       "      <td>AUS</td>\n",
+       "      <td>725</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>Megan Schutt</td>\n",
+       "      <td>AUS</td>\n",
+       "      <td>722</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>Shabnim Ismail</td>\n",
+       "      <td>SA</td>\n",
+       "      <td>722</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>Jhulan Goswami</td>\n",
+       "      <td>IND</td>\n",
+       "      <td>698</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>Hayley Matthews</td>\n",
+       "      <td>WI</td>\n",
+       "      <td>660</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>6</th>\n",
+       "      <td>Kate Cross</td>\n",
+       "      <td>ENG</td>\n",
+       "      <td>655</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7</th>\n",
+       "      <td>Ayabonga Khaka</td>\n",
+       "      <td>SA</td>\n",
+       "      <td>634</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>8</th>\n",
+       "      <td>Rajeshwari Gayakwad</td>\n",
+       "      <td>IND</td>\n",
+       "      <td>617</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>9</th>\n",
+       "      <td>Marizanne Kapp</td>\n",
+       "      <td>SA</td>\n",
+       "      <td>598</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "           Player Name Team Rating\n",
+       "0    Sophie Ecclestone  ENG    751\n",
+       "1        Jess Jonassen  AUS    725\n",
+       "2         Megan Schutt  AUS    722\n",
+       "3       Shabnim Ismail   SA    722\n",
+       "4       Jhulan Goswami  IND    698\n",
+       "5      Hayley Matthews   WI    660\n",
+       "6           Kate Cross  ENG    655\n",
+       "7       Ayabonga Khaka   SA    634\n",
+       "8  Rajeshwari Gayakwad  IND    617\n",
+       "9       Marizanne Kapp   SA    598"
+      ]
+     },
+     "execution_count": 121,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "bowling = pd.DataFrame({'Player Name':name, 'Team':team, 'Rating':rat})\n",
+    "print('Top 10 ODI Bowling Women')\n",
+    "print('-'*30)\n",
+    "bowling[0:10]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "99510b37",
+   "metadata": {},
+   "source": [
+    "**7.Write a python program to scrape mentioned news details from https://www.cnbc.com/world/?region=world :**\n",
+    "\n",
+    "**i) Headline**\n",
+    "\n",
+    "**ii) Time**\n",
+    "\n",
+    "**iii) News Link**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 148,
+   "id": "28662075",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<Response [200]>"
+      ]
+     },
+     "execution_count": 148,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "page = requests.get('https://www.cnbc.com/world/?region=world')\n",
+    "page\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 150,
+   "id": "5ed7762d",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "soup = BeautifulSoup(page.content)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 151,
+   "id": "b3a30e08",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['Open enrollment for 2023 health coverage through public exchange ends Sunday',\n",
+       " 'Self-made millionaire: 3 habits to start in your 20s if you want to succeed',\n",
+       " \"Want to sound more assertive? Ditch these 4 phrases that make you look 'weak or timid': Word experts\",\n",
+       " 'The big risk in the most-popular, and aging, big tech default email programs',\n",
+       " 'State-run auto-IRA programs continue growing as more options launch',\n",
+       " \"Food fraud secretly infiltrates America. Here's how you can avoid it\",\n",
+       " '10 auto industry predictions for investors to keep an eye on this year',\n",
+       " 'Mark Cuban on the company that made him rich: ‘People thought I was an idiot’',\n",
+       " \"Wall Street's favorite retail stocks include Amazon, a little-known shoe company\",\n",
+       " 'A busy movie calendar will lead to a 15% jump in box office sales, JPMorgan says',\n",
+       " \"These tactical trades are among Goldman's favorite ways to play earnings season\",\n",
+       " 'More classified documents found at Biden’s Delaware home, White House counsel says',\n",
+       " 'The biggest risks of using Bluetooth trackers like Apple AirTag, Tile',\n",
+       " 'Veganuary: 3 ways to meet your protein goals on a plant-based diet',\n",
+       " \"Investing in last year's top 10 stocks is 'a recipe for disaster,' expert says\",\n",
+       " '4 side hustles for introverts: Some can bring in tens of thousands of dollars',\n",
+       " \"Here are the odds you'll win the $404 million Powerball jackpot\",\n",
+       " 'The condo king of Miami is betting big on a new Fisher Island luxury project',\n",
+       " 'Carmakers upgrade lineups to meet high-end demand, scale back on less expensive cars',\n",
+       " 'What it’s like to deliver for Amazon in new electric Rivian vans',\n",
+       " 'The bold bullish case to be made for U.S. stocks',\n",
+       " 'Earnings stars: Stocks expected to post the biggest profit growth of 2023 ',\n",
+       " 'Morgan Stanley says these are the most undervalued stocks this year',\n",
+       " 'Stocks on a roll. But overbought market, earnings key hurdles in the week ahead',\n",
+       " 'The zero-fare public transit movement is picking up momentum',\n",
+       " 'Building self-discipline by age 27 is crucial, says expert: 3 ways to do it',\n",
+       " 'Iran executes British-Iranian national despite UK, U.S. pleas',\n",
+       " 'Rising commodities prices could be a tailwind for Caterpillar',\n",
+       " \"Cramer's lightning round: Costamare is not a buy\",\n",
+       " 'Cramer’s week ahead: Wait before trading on company earnings']"
+      ]
+     },
+     "execution_count": 151,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "title=[]\n",
+    "for i in soup.find_all(\"a\",class_=\"LatestNews-headline\"):\n",
+    "    title.append(i.text)\n",
+    "title"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 152,
+   "id": "719c0cba",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['48 Min Ago',\n",
+       " '3 Hours Ago',\n",
+       " '4 Hours Ago',\n",
+       " '4 Hours Ago',\n",
+       " '5 Hours Ago',\n",
+       " '5 Hours Ago',\n",
+       " '5 Hours Ago',\n",
+       " '5 Hours Ago',\n",
+       " '6 Hours Ago',\n",
+       " '6 Hours Ago',\n",
+       " '6 Hours Ago',\n",
+       " 'January 14, 2023',\n",
+       " 'January 14, 2023',\n",
+       " 'January 14, 2023',\n",
+       " 'January 14, 2023',\n",
+       " 'January 14, 2023',\n",
+       " 'January 14, 2023',\n",
+       " 'January 14, 2023',\n",
+       " 'January 14, 2023',\n",
+       " 'January 14, 2023',\n",
+       " 'January 14, 2023',\n",
+       " 'January 14, 2023',\n",
+       " 'January 14, 2023',\n",
+       " 'January 14, 2023',\n",
+       " 'January 14, 2023',\n",
+       " 'January 14, 2023',\n",
+       " 'January 14, 2023',\n",
+       " 'January 13, 2023',\n",
+       " 'January 13, 2023',\n",
+       " 'January 13, 2023']"
+      ]
+     },
+     "execution_count": 152,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "time=[]\n",
+    "for i in soup.find_all(\"span\",class_=\"LatestNews-wrapper\"):\n",
+    "    time.append(i.text)\n",
+    "time"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 153,
+   "id": "94cd1078",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['https://www.cnbc.com/2023/01/15/open-enrollment-for-2023-health-coverage-through-exchange-ends-sunday.html',\n",
+       " 'https://www.cnbc.com/2023/01/15/self-made-millionaire-habits-to-start-in-your-20s-for-a-successful-life.html',\n",
+       " 'https://www.cnbc.com/2023/01/15/want-to-sound-more-assertive-avoid-these-phrases-that-make-you-sound-weak-timid-word-experts.html',\n",
+       " 'https://www.cnbc.com/2023/01/15/the-most-popular-big-tech-email-programs-are-old-and-vulnerable.html',\n",
+       " 'https://www.cnbc.com/2023/01/15/state-run-auto-ira-programs-continue-growing-as-more-options-launch.html',\n",
+       " 'https://www.cnbc.com/2023/01/15/food-fraud-secretly-infiltrates-america-heres-how-you-can-avoid-it-.html',\n",
+       " 'https://www.cnbc.com/2023/01/15/ten-auto-industry-predictions-2023.html',\n",
+       " 'https://www.cnbc.com/2023/01/15/mark-cuban-on-broadcastcom-streaming-people-thought-i-was-an-idiot.html',\n",
+       " 'https://www.cnbc.com/2023/01/15/wall-streets-favorite-retail-stocks-include-amazon-and-this-little-known-shoe-company.html',\n",
+       " 'https://www.cnbc.com/2023/01/15/a-busier-movie-calendar-may-lead-to-a-15percent-jump-in-box-office-sales.html',\n",
+       " 'https://www.cnbc.com/2023/01/15/these-tactical-trades-are-some-of-goldmans-ways-to-play-q4-earnings.html',\n",
+       " 'https://www.cnbc.com/2023/01/14/white-house-says-more-classified-documents-found-at-bidens-home.html',\n",
+       " 'https://www.cnbc.com/2023/01/14/the-biggest-security-pros-and-cons-of-using-bluetooth-gps-trackers.html',\n",
+       " 'https://www.cnbc.com/2023/01/14/veganuary-3-ways-to-meet-your-protein-goals-on-a-plant-based-diet.html',\n",
+       " 'https://www.cnbc.com/2023/01/14/best-performing-stocks-of-2022.html',\n",
+       " 'https://www.cnbc.com/2023/01/14/side-hustles-for-introverts-some-can-bring-in-tens-of-thousands-.html',\n",
+       " 'https://www.cnbc.com/2023/01/14/powerball-odds-of-winning-jackpot.html',\n",
+       " 'https://www.cnbc.com/2023/01/14/condo-king-miami-fisher-island-luxury.html',\n",
+       " 'https://www.cnbc.com/2023/01/14/carmakers-upgrade-lineups-to-meet-demand-for-high-end-options.html',\n",
+       " 'https://www.cnbc.com/2023/01/14/what-its-like-to-deliver-for-amazon-in-new-rivian-electric-vans.html',\n",
+       " 'https://www.cnbc.com/2023/01/14/the-bold-bullish-case-to-be-made-for-us-stocks-one-that-not-many-are-voicing-just-yet.html',\n",
+       " 'https://www.cnbc.com/2023/01/14/earnings-stars-stocks-most-likely-to-see-biggest-2023-profit-growth.html',\n",
+       " 'https://www.cnbc.com/2023/01/14/stocks-like-dicks-sporting-goods-verizon-are-morgan-stanleys-best-buys-for-2023.html',\n",
+       " 'https://www.cnbc.com/2023/01/14/investing-club-the-week-in-review-the-week-ahead-jan-14-2023.html',\n",
+       " 'https://www.cnbc.com/2023/01/14/zero-fare-public-transit-movement-gains-momentum.html',\n",
+       " 'https://www.cnbc.com/2023/01/14/psychiatrist-from-netflix-doc-stutz-how-to-build-self-discipline.html',\n",
+       " 'https://www.cnbc.com/2023/01/14/iran-executes-british-iranian-national-despite-uk-us-pleas.html',\n",
+       " 'https://www.cnbc.com/2023/01/13/rising-commodities-prices-could-be-a-tailwind-for-caterpillar-and-these-industrial-names.html',\n",
+       " 'https://www.cnbc.com/2023/01/13/cramers-lightning-round-costamare-is-not-a-buy.html',\n",
+       " 'https://www.cnbc.com/2023/01/13/cramers-week-ahead-wait-before-trading-on-company-earnings.html']"
+      ]
+     },
+     "execution_count": 153,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "link=[]\n",
+    "for i in soup.find_all(\"a\",class_=\"LatestNews-headline\"):\n",
+    "    link.append(i.get(\"href\"))\n",
+    "link"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 154,
+   "id": "997ed6c1",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "30 30 30\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(len(title),len(time),len(link))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 155,
+   "id": "0d464ec9",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Headline</th>\n",
+       "      <th>Published</th>\n",
+       "      <th>Link</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>Open enrollment for 2023 health coverage throu...</td>\n",
+       "      <td>48 Min Ago</td>\n",
+       "      <td>https://www.cnbc.com/2023/01/15/open-enrollmen...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>Self-made millionaire: 3 habits to start in yo...</td>\n",
+       "      <td>3 Hours Ago</td>\n",
+       "      <td>https://www.cnbc.com/2023/01/15/self-made-mill...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>Want to sound more assertive? Ditch these 4 ph...</td>\n",
+       "      <td>4 Hours Ago</td>\n",
+       "      <td>https://www.cnbc.com/2023/01/15/want-to-sound-...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>The big risk in the most-popular, and aging, b...</td>\n",
+       "      <td>4 Hours Ago</td>\n",
+       "      <td>https://www.cnbc.com/2023/01/15/the-most-popul...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>State-run auto-IRA programs continue growing a...</td>\n",
+       "      <td>5 Hours Ago</td>\n",
+       "      <td>https://www.cnbc.com/2023/01/15/state-run-auto...</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                                            Headline    Published  \\\n",
+       "0  Open enrollment for 2023 health coverage throu...   48 Min Ago   \n",
+       "1  Self-made millionaire: 3 habits to start in yo...  3 Hours Ago   \n",
+       "2  Want to sound more assertive? Ditch these 4 ph...  4 Hours Ago   \n",
+       "3  The big risk in the most-popular, and aging, b...  4 Hours Ago   \n",
+       "4  State-run auto-IRA programs continue growing a...  5 Hours Ago   \n",
+       "\n",
+       "                                                Link  \n",
+       "0  https://www.cnbc.com/2023/01/15/open-enrollmen...  \n",
+       "1  https://www.cnbc.com/2023/01/15/self-made-mill...  \n",
+       "2  https://www.cnbc.com/2023/01/15/want-to-sound-...  \n",
+       "3  https://www.cnbc.com/2023/01/15/the-most-popul...  \n",
+       "4  https://www.cnbc.com/2023/01/15/state-run-auto...  "
+      ]
+     },
+     "execution_count": 155,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df=pd.DataFrame({\"Headline\":title,\"Published\":time,\"Link\":link})\n",
+    "df.head()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4562f2cf",
+   "metadata": {},
+   "source": [
+    "**8)Write a python program to scrape the details of most downloaded articles from AI in last 90 days.**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "ce0474db",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<Response [200]>"
+      ]
+     },
+     "execution_count": 10,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "ai=requests.get('https://www.journals.elsevier.com/artificial-intelligence/most-downloaded-articles')\n",
+    "ai"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "ce7f7da8",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "soup=BeautifulSoup(ai.content)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "b0fe4dfc",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['Reward is enough',\n",
+       " 'Making sense of raw input',\n",
+       " 'Law and logic: A review from an argumentation perspective',\n",
+       " 'Creativity and artificial intelligence',\n",
+       " 'Artificial cognition for social human–robot interaction: An implementation',\n",
+       " 'Explanation in artificial intelligence: Insights from the social sciences',\n",
+       " 'Making sense of sensory input',\n",
+       " 'Conflict-based search for optimal multi-agent pathfinding',\n",
+       " 'Between MDPs and semi-MDPs: A framework for temporal abstraction in reinforcement learning',\n",
+       " 'The Hanabi challenge: A new frontier for AI research',\n",
+       " 'Evaluating XAI: A comparison of rule-based and example-based explanations',\n",
+       " 'Argumentation in artificial intelligence',\n",
+       " 'Algorithms for computing strategies in two-player simultaneous move games',\n",
+       " 'Multiple object tracking: A literature review',\n",
+       " 'Selection of relevant features and examples in machine learning',\n",
+       " 'A survey of inverse reinforcement learning: Challenges, methods and progress',\n",
+       " 'Explaining individual predictions when features are dependent: More accurate approximations to Shapley values',\n",
+       " 'A review of possible effects of cognitive biases on interpretation of rule-based machine learning models',\n",
+       " 'Integrating social power into the decision-making of cognitive agents',\n",
+       " \"“That's (not) the output I expected!” On the role of end user expectations in creating explanations of AI systems\",\n",
+       " 'Explaining black-box classifiers using post-hoc explanations-by-example: The effect of explanations and error-rates in XAI user studies',\n",
+       " 'Algorithm runtime prediction: Methods & evaluation',\n",
+       " 'Wrappers for feature subset selection',\n",
+       " 'Commonsense visual sensemaking for autonomous driving – On generalised neurosymbolic online abduction integrating vision and semantics',\n",
+       " 'Quantum computation, quantum theory and AI']"
+      ]
+     },
+     "execution_count": 11,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "Paper = []\n",
+    "for i in soup.find_all('a',class_=\"sc-5smygv-0 fIXTHm\"):\n",
+    "    Paper.append(i.get_text())\n",
+    "Paper"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "id": "6ff2cdde",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['Silver, David, Singh, Satinder, Precup, Doina, Sutton, Richard S. ',\n",
+       " 'Evans, Richard, Bošnjak, Matko and 5 more',\n",
+       " 'Prakken, Henry, Sartor, Giovanni ',\n",
+       " 'Boden, Margaret A. ',\n",
+       " 'Lemaignan, Séverin, Warnier, Mathieu and 3 more',\n",
+       " 'Miller, Tim ',\n",
+       " 'Evans, Richard, Hernández-Orallo, José and 3 more',\n",
+       " 'Sharon, Guni, Stern, Roni, Felner, Ariel, Sturtevant, Nathan R. ',\n",
+       " 'Sutton, Richard S., Precup, Doina, Singh, Satinder ',\n",
+       " 'Bard, Nolan, Foerster, Jakob N. and 13 more',\n",
+       " 'van der Waa, Jasper, Nieuwburg, Elisabeth, Cremers, Anita, Neerincx, Mark ',\n",
+       " 'Bench-Capon, T.J.M., Dunne, Paul E. ',\n",
+       " 'Bošanský, Branislav, Lisý, Viliam and 3 more',\n",
+       " 'Luo, Wenhan, Xing, Junliang and 4 more',\n",
+       " 'Blum, Avrim L., Langley, Pat ',\n",
+       " 'Arora, Saurabh, Doshi, Prashant ',\n",
+       " 'Aas, Kjersti, Jullum, Martin, Løland, Anders ',\n",
+       " 'Kliegr, Tomáš, Bahník, Štěpán, Fürnkranz, Johannes ',\n",
+       " 'Pereira, Gonçalo, Prada, Rui, Santos, Pedro A. ',\n",
+       " 'Riveiro, Maria, Thill, Serge ',\n",
+       " 'Kenny, Eoin M., Ford, Courtney, Quinn, Molly, Keane, Mark T. ',\n",
+       " 'Hutter, Frank, Xu, Lin, Hoos, Holger H., Leyton-Brown, Kevin ',\n",
+       " 'Kohavi, Ron, John, George H. ',\n",
+       " 'Suchan, Jakob, Bhatt, Mehul, Varadarajan, Srikrishna ',\n",
+       " 'Ying, Mingsheng ']"
+      ]
+     },
+     "execution_count": 12,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "Authors = []\n",
+    "for i in soup.find_all('span',class_=\"sc-1w3fpd7-0 dnCnAO\"):\n",
+    "    Authors.append(i.get_text())\n",
+    "Authors"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "id": "7152bb8c",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['October 2021',\n",
+       " 'October 2021',\n",
+       " 'October 2015',\n",
+       " 'August 1998',\n",
+       " 'June 2017',\n",
+       " 'February 2019',\n",
+       " 'April 2021',\n",
+       " 'February 2015',\n",
+       " 'August 1999',\n",
+       " 'March 2020',\n",
+       " 'February 2021',\n",
+       " 'October 2007',\n",
+       " 'August 2016',\n",
+       " 'April 2021',\n",
+       " 'December 1997',\n",
+       " 'August 2021',\n",
+       " 'September 2021',\n",
+       " 'June 2021',\n",
+       " 'December 2016',\n",
+       " 'September 2021',\n",
+       " 'May 2021',\n",
+       " 'January 2014',\n",
+       " 'December 1997',\n",
+       " 'October 2021',\n",
+       " 'February 2010']"
+      ]
+     },
+     "execution_count": 16,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "PublishedDate = []\n",
+    "for i in soup.find_all('span',class_=\"sc-1thf9ly-2 dvggWt\"):\n",
+    "    PublishedDate.append(i.get_text())  \n",
+    "PublishedDate\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "id": "976c10d5",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['https://www.sciencedirect.com/science/article/pii/S0004370221000862',\n",
+       " 'https://www.sciencedirect.com/science/article/pii/S0004370221000722',\n",
+       " 'https://www.sciencedirect.com/science/article/pii/S0004370215000910',\n",
+       " 'https://www.sciencedirect.com/science/article/pii/S0004370298000551',\n",
+       " 'https://www.sciencedirect.com/science/article/pii/S0004370216300790',\n",
+       " 'https://www.sciencedirect.com/science/article/pii/S0004370218305988',\n",
+       " 'https://www.sciencedirect.com/science/article/pii/S0004370220301855',\n",
+       " 'https://www.sciencedirect.com/science/article/pii/S0004370214001386',\n",
+       " 'https://www.sciencedirect.com/science/article/pii/S0004370299000521',\n",
+       " 'https://www.sciencedirect.com/science/article/pii/S0004370219300116',\n",
+       " 'https://www.sciencedirect.com/science/article/pii/S0004370220301533',\n",
+       " 'https://www.sciencedirect.com/science/article/pii/S0004370207000793',\n",
+       " 'https://www.sciencedirect.com/science/article/pii/S0004370216300285',\n",
+       " 'https://www.sciencedirect.com/science/article/pii/S0004370220301958',\n",
+       " 'https://www.sciencedirect.com/science/article/pii/S0004370297000635',\n",
+       " 'https://www.sciencedirect.com/science/article/pii/S0004370221000515',\n",
+       " 'https://www.sciencedirect.com/science/article/pii/S0004370221000539',\n",
+       " 'https://www.sciencedirect.com/science/article/pii/S0004370221000096',\n",
+       " 'https://www.sciencedirect.com/science/article/pii/S0004370216300868',\n",
+       " 'https://www.sciencedirect.com/science/article/pii/S0004370221000588',\n",
+       " 'https://www.sciencedirect.com/science/article/pii/S0004370221000102',\n",
+       " 'https://www.sciencedirect.com/science/article/pii/S0004370213001082',\n",
+       " 'https://www.sciencedirect.com/science/article/pii/S000437029700043X',\n",
+       " 'https://www.sciencedirect.com/science/article/pii/S0004370221000734',\n",
+       " 'https://www.sciencedirect.com/science/article/pii/S0004370209001398']"
+      ]
+     },
+     "execution_count": 18,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "URL = []\n",
+    "for i in soup.find_all('a',class_=\"sc-5smygv-0 fIXTHm\"):\n",
+    "         URL.append(i.get('href'))  \n",
+    "URL"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "id": "d7555b63",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Paper Title</th>\n",
+       "      <th>Author</th>\n",
+       "      <th>Published Date</th>\n",
+       "      <th>Paper URL</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>Reward is enough</td>\n",
+       "      <td>Silver, David, Singh, Satinder, Precup, Doina,...</td>\n",
+       "      <td>October 2021</td>\n",
+       "      <td>https://www.sciencedirect.com/science/article/...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>Making sense of raw input</td>\n",
+       "      <td>Evans, Richard, Bošnjak, Matko and 5 more</td>\n",
+       "      <td>October 2021</td>\n",
+       "      <td>https://www.sciencedirect.com/science/article/...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>Law and logic: A review from an argumentation ...</td>\n",
+       "      <td>Prakken, Henry, Sartor, Giovanni</td>\n",
+       "      <td>October 2015</td>\n",
+       "      <td>https://www.sciencedirect.com/science/article/...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>Creativity and artificial intelligence</td>\n",
+       "      <td>Boden, Margaret A.</td>\n",
+       "      <td>August 1998</td>\n",
+       "      <td>https://www.sciencedirect.com/science/article/...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>Artificial cognition for social human–robot in...</td>\n",
+       "      <td>Lemaignan, Séverin, Warnier, Mathieu and 3 more</td>\n",
+       "      <td>June 2017</td>\n",
+       "      <td>https://www.sciencedirect.com/science/article/...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>Explanation in artificial intelligence: Insigh...</td>\n",
+       "      <td>Miller, Tim</td>\n",
+       "      <td>February 2019</td>\n",
+       "      <td>https://www.sciencedirect.com/science/article/...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>6</th>\n",
+       "      <td>Making sense of sensory input</td>\n",
+       "      <td>Evans, Richard, Hernández-Orallo, José and 3 more</td>\n",
+       "      <td>April 2021</td>\n",
+       "      <td>https://www.sciencedirect.com/science/article/...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7</th>\n",
+       "      <td>Conflict-based search for optimal multi-agent ...</td>\n",
+       "      <td>Sharon, Guni, Stern, Roni, Felner, Ariel, Stur...</td>\n",
+       "      <td>February 2015</td>\n",
+       "      <td>https://www.sciencedirect.com/science/article/...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>8</th>\n",
+       "      <td>Between MDPs and semi-MDPs: A framework for te...</td>\n",
+       "      <td>Sutton, Richard S., Precup, Doina, Singh, Sati...</td>\n",
+       "      <td>August 1999</td>\n",
+       "      <td>https://www.sciencedirect.com/science/article/...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>9</th>\n",
+       "      <td>The Hanabi challenge: A new frontier for AI re...</td>\n",
+       "      <td>Bard, Nolan, Foerster, Jakob N. and 13 more</td>\n",
+       "      <td>March 2020</td>\n",
+       "      <td>https://www.sciencedirect.com/science/article/...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>10</th>\n",
+       "      <td>Evaluating XAI: A comparison of rule-based and...</td>\n",
+       "      <td>van der Waa, Jasper, Nieuwburg, Elisabeth, Cre...</td>\n",
+       "      <td>February 2021</td>\n",
+       "      <td>https://www.sciencedirect.com/science/article/...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>11</th>\n",
+       "      <td>Argumentation in artificial intelligence</td>\n",
+       "      <td>Bench-Capon, T.J.M., Dunne, Paul E.</td>\n",
+       "      <td>October 2007</td>\n",
+       "      <td>https://www.sciencedirect.com/science/article/...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>12</th>\n",
+       "      <td>Algorithms for computing strategies in two-pla...</td>\n",
+       "      <td>Bošanský, Branislav, Lisý, Viliam and 3 more</td>\n",
+       "      <td>August 2016</td>\n",
+       "      <td>https://www.sciencedirect.com/science/article/...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>13</th>\n",
+       "      <td>Multiple object tracking: A literature review</td>\n",
+       "      <td>Luo, Wenhan, Xing, Junliang and 4 more</td>\n",
+       "      <td>April 2021</td>\n",
+       "      <td>https://www.sciencedirect.com/science/article/...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>14</th>\n",
+       "      <td>Selection of relevant features and examples in...</td>\n",
+       "      <td>Blum, Avrim L., Langley, Pat</td>\n",
+       "      <td>December 1997</td>\n",
+       "      <td>https://www.sciencedirect.com/science/article/...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>15</th>\n",
+       "      <td>A survey of inverse reinforcement learning: Ch...</td>\n",
+       "      <td>Arora, Saurabh, Doshi, Prashant</td>\n",
+       "      <td>August 2021</td>\n",
+       "      <td>https://www.sciencedirect.com/science/article/...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>16</th>\n",
+       "      <td>Explaining individual predictions when feature...</td>\n",
+       "      <td>Aas, Kjersti, Jullum, Martin, Løland, Anders</td>\n",
+       "      <td>September 2021</td>\n",
+       "      <td>https://www.sciencedirect.com/science/article/...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>17</th>\n",
+       "      <td>A review of possible effects of cognitive bias...</td>\n",
+       "      <td>Kliegr, Tomáš, Bahník, Štěpán, Fürnkranz, Joha...</td>\n",
+       "      <td>June 2021</td>\n",
+       "      <td>https://www.sciencedirect.com/science/article/...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>18</th>\n",
+       "      <td>Integrating social power into the decision-mak...</td>\n",
+       "      <td>Pereira, Gonçalo, Prada, Rui, Santos, Pedro A.</td>\n",
+       "      <td>December 2016</td>\n",
+       "      <td>https://www.sciencedirect.com/science/article/...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>19</th>\n",
+       "      <td>“That's (not) the output I expected!” On the r...</td>\n",
+       "      <td>Riveiro, Maria, Thill, Serge</td>\n",
+       "      <td>September 2021</td>\n",
+       "      <td>https://www.sciencedirect.com/science/article/...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>20</th>\n",
+       "      <td>Explaining black-box classifiers using post-ho...</td>\n",
+       "      <td>Kenny, Eoin M., Ford, Courtney, Quinn, Molly, ...</td>\n",
+       "      <td>May 2021</td>\n",
+       "      <td>https://www.sciencedirect.com/science/article/...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>21</th>\n",
+       "      <td>Algorithm runtime prediction: Methods &amp; evalua...</td>\n",
+       "      <td>Hutter, Frank, Xu, Lin, Hoos, Holger H., Leyto...</td>\n",
+       "      <td>January 2014</td>\n",
+       "      <td>https://www.sciencedirect.com/science/article/...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>22</th>\n",
+       "      <td>Wrappers for feature subset selection</td>\n",
+       "      <td>Kohavi, Ron, John, George H.</td>\n",
+       "      <td>December 1997</td>\n",
+       "      <td>https://www.sciencedirect.com/science/article/...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>23</th>\n",
+       "      <td>Commonsense visual sensemaking for autonomous ...</td>\n",
+       "      <td>Suchan, Jakob, Bhatt, Mehul, Varadarajan, Srik...</td>\n",
+       "      <td>October 2021</td>\n",
+       "      <td>https://www.sciencedirect.com/science/article/...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>24</th>\n",
+       "      <td>Quantum computation, quantum theory and AI</td>\n",
+       "      <td>Ying, Mingsheng</td>\n",
+       "      <td>February 2010</td>\n",
+       "      <td>https://www.sciencedirect.com/science/article/...</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                                          Paper Title  \\\n",
+       "0                                    Reward is enough   \n",
+       "1                           Making sense of raw input   \n",
+       "2   Law and logic: A review from an argumentation ...   \n",
+       "3              Creativity and artificial intelligence   \n",
+       "4   Artificial cognition for social human–robot in...   \n",
+       "5   Explanation in artificial intelligence: Insigh...   \n",
+       "6                       Making sense of sensory input   \n",
+       "7   Conflict-based search for optimal multi-agent ...   \n",
+       "8   Between MDPs and semi-MDPs: A framework for te...   \n",
+       "9   The Hanabi challenge: A new frontier for AI re...   \n",
+       "10  Evaluating XAI: A comparison of rule-based and...   \n",
+       "11           Argumentation in artificial intelligence   \n",
+       "12  Algorithms for computing strategies in two-pla...   \n",
+       "13      Multiple object tracking: A literature review   \n",
+       "14  Selection of relevant features and examples in...   \n",
+       "15  A survey of inverse reinforcement learning: Ch...   \n",
+       "16  Explaining individual predictions when feature...   \n",
+       "17  A review of possible effects of cognitive bias...   \n",
+       "18  Integrating social power into the decision-mak...   \n",
+       "19  “That's (not) the output I expected!” On the r...   \n",
+       "20  Explaining black-box classifiers using post-ho...   \n",
+       "21  Algorithm runtime prediction: Methods & evalua...   \n",
+       "22              Wrappers for feature subset selection   \n",
+       "23  Commonsense visual sensemaking for autonomous ...   \n",
+       "24         Quantum computation, quantum theory and AI   \n",
+       "\n",
+       "                                               Author  Published Date  \\\n",
+       "0   Silver, David, Singh, Satinder, Precup, Doina,...    October 2021   \n",
+       "1           Evans, Richard, Bošnjak, Matko and 5 more    October 2021   \n",
+       "2                   Prakken, Henry, Sartor, Giovanni     October 2015   \n",
+       "3                                 Boden, Margaret A.      August 1998   \n",
+       "4     Lemaignan, Séverin, Warnier, Mathieu and 3 more       June 2017   \n",
+       "5                                        Miller, Tim    February 2019   \n",
+       "6   Evans, Richard, Hernández-Orallo, José and 3 more      April 2021   \n",
+       "7   Sharon, Guni, Stern, Roni, Felner, Ariel, Stur...   February 2015   \n",
+       "8   Sutton, Richard S., Precup, Doina, Singh, Sati...     August 1999   \n",
+       "9         Bard, Nolan, Foerster, Jakob N. and 13 more      March 2020   \n",
+       "10  van der Waa, Jasper, Nieuwburg, Elisabeth, Cre...   February 2021   \n",
+       "11               Bench-Capon, T.J.M., Dunne, Paul E.     October 2007   \n",
+       "12       Bošanský, Branislav, Lisý, Viliam and 3 more     August 2016   \n",
+       "13             Luo, Wenhan, Xing, Junliang and 4 more      April 2021   \n",
+       "14                      Blum, Avrim L., Langley, Pat    December 1997   \n",
+       "15                   Arora, Saurabh, Doshi, Prashant      August 2021   \n",
+       "16      Aas, Kjersti, Jullum, Martin, Løland, Anders   September 2021   \n",
+       "17  Kliegr, Tomáš, Bahník, Štěpán, Fürnkranz, Joha...       June 2021   \n",
+       "18    Pereira, Gonçalo, Prada, Rui, Santos, Pedro A.    December 2016   \n",
+       "19                      Riveiro, Maria, Thill, Serge   September 2021   \n",
+       "20  Kenny, Eoin M., Ford, Courtney, Quinn, Molly, ...        May 2021   \n",
+       "21  Hutter, Frank, Xu, Lin, Hoos, Holger H., Leyto...    January 2014   \n",
+       "22                      Kohavi, Ron, John, George H.    December 1997   \n",
+       "23  Suchan, Jakob, Bhatt, Mehul, Varadarajan, Srik...    October 2021   \n",
+       "24                                   Ying, Mingsheng    February 2010   \n",
+       "\n",
+       "                                            Paper URL  \n",
+       "0   https://www.sciencedirect.com/science/article/...  \n",
+       "1   https://www.sciencedirect.com/science/article/...  \n",
+       "2   https://www.sciencedirect.com/science/article/...  \n",
+       "3   https://www.sciencedirect.com/science/article/...  \n",
+       "4   https://www.sciencedirect.com/science/article/...  \n",
+       "5   https://www.sciencedirect.com/science/article/...  \n",
+       "6   https://www.sciencedirect.com/science/article/...  \n",
+       "7   https://www.sciencedirect.com/science/article/...  \n",
+       "8   https://www.sciencedirect.com/science/article/...  \n",
+       "9   https://www.sciencedirect.com/science/article/...  \n",
+       "10  https://www.sciencedirect.com/science/article/...  \n",
+       "11  https://www.sciencedirect.com/science/article/...  \n",
+       "12  https://www.sciencedirect.com/science/article/...  \n",
+       "13  https://www.sciencedirect.com/science/article/...  \n",
+       "14  https://www.sciencedirect.com/science/article/...  \n",
+       "15  https://www.sciencedirect.com/science/article/...  \n",
+       "16  https://www.sciencedirect.com/science/article/...  \n",
+       "17  https://www.sciencedirect.com/science/article/...  \n",
+       "18  https://www.sciencedirect.com/science/article/...  \n",
+       "19  https://www.sciencedirect.com/science/article/...  \n",
+       "20  https://www.sciencedirect.com/science/article/...  \n",
+       "21  https://www.sciencedirect.com/science/article/...  \n",
+       "22  https://www.sciencedirect.com/science/article/...  \n",
+       "23  https://www.sciencedirect.com/science/article/...  \n",
+       "24  https://www.sciencedirect.com/science/article/...  "
+      ]
+     },
+     "execution_count": 19,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "journal = pd.DataFrame({'Paper Title':Paper, 'Author':Authors, 'Published Date':PublishedDate, 'Paper URL':URL})\n",
+    "journal"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d47ab7ad",
+   "metadata": {},
+   "source": [
+    "**9) Write a python program to scrape mentioned details from dineout.co.in :**\n",
+    "    \n",
+    "**i) Restaurant name**\n",
+    "\n",
+    "**ii) Cuisine**\n",
+    "\n",
+    "**iii) Location**\n",
+    "\n",
+    "**iv) Ratings**\n",
+    "\n",
+    "**v) Image URL**\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "id": "e2507688",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<Response [200]>"
+      ]
+     },
+     "execution_count": 20,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "dine = requests.get('https://www.dineout.co.in/delhi-restaurants/buffet-special')\n",
+    "dine"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 22,
+   "id": "ede49563",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "conn = BeautifulSoup(dine.content)\n",
+    "\n",
+    "name = []\n",
+    "for i in conn.find_all('a',class_=\"restnt-name ellipsis\"):\n",
+    "    name.append(i.text)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 23,
+   "id": "fd08b5a0",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "cuisine = []\n",
+    "for i in conn.find_all('span',class_=\"double-line-ellipsis\"):\n",
+    "    cuisine.append(i.text.split('|')[1])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 24,
+   "id": "4e1a4acc",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "loc = []\n",
+    "for i in conn.find_all('div',class_=\"restnt-loc ellipsis\"):\n",
+    "    loc.append(i.text)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 25,
+   "id": "6b7a295c",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "rating = []\n",
+    "for i in conn.find_all('div',class_=\"restnt-rating rating-4\"):\n",
+    "    rating.append(i.text)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 26,
+   "id": "1036ae07",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "image = []\n",
+    "for i in conn.find_all('img',class_=\"no-img\"):\n",
+    "    image.append(i['data-src'])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 27,
+   "id": "7b7df438",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Restaurant Name</th>\n",
+       "      <th>Cuisine</th>\n",
+       "      <th>Location</th>\n",
+       "      <th>Rating</th>\n",
+       "      <th>Image URL</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>Castle Barbeque</td>\n",
+       "      <td>Chinese, North Indian</td>\n",
+       "      <td>Connaught Place, Central Delhi</td>\n",
+       "      <td>4.1</td>\n",
+       "      <td>https://im1.dineout.co.in/images/uploads/resta...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>Jungle Jamboree</td>\n",
+       "      <td>North Indian, Asian, Italian</td>\n",
+       "      <td>3CS Mall,Lajpat Nagar - 3, South Delhi</td>\n",
+       "      <td>3.9</td>\n",
+       "      <td>https://im1.dineout.co.in/images/uploads/resta...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>Cafe Knosh</td>\n",
+       "      <td>Italian, Continental</td>\n",
+       "      <td>The Leela Ambience Convention Hotel,Shahdara, ...</td>\n",
+       "      <td>4.3</td>\n",
+       "      <td>https://im1.dineout.co.in/images/uploads/resta...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>Castle Barbeque</td>\n",
+       "      <td>Chinese, North Indian</td>\n",
+       "      <td>Pacific Mall,Tagore Garden, West Delhi</td>\n",
+       "      <td>3.9</td>\n",
+       "      <td>https://im1.dineout.co.in/images/uploads/resta...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>The Barbeque Company</td>\n",
+       "      <td>North Indian, Chinese</td>\n",
+       "      <td>Gardens Galleria,Sector 38A, Noida</td>\n",
+       "      <td>4</td>\n",
+       "      <td>https://im1.dineout.co.in/images/uploads/resta...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>India Grill</td>\n",
+       "      <td>North Indian, Italian</td>\n",
+       "      <td>Hilton Garden Inn,Saket, South Delhi</td>\n",
+       "      <td>3.9</td>\n",
+       "      <td>https://im1.dineout.co.in/images/uploads/resta...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>6</th>\n",
+       "      <td>Delhi Barbeque</td>\n",
+       "      <td>North Indian</td>\n",
+       "      <td>Taurus Sarovar Portico,Mahipalpur, South Delhi</td>\n",
+       "      <td>3.6</td>\n",
+       "      <td>https://im1.dineout.co.in/images/uploads/resta...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7</th>\n",
+       "      <td>The Monarch - Bar Be Que Village</td>\n",
+       "      <td>North Indian</td>\n",
+       "      <td>Indirapuram Habitat Centre,Indirapuram, Ghaziabad</td>\n",
+       "      <td>3.8</td>\n",
+       "      <td>https://im1.dineout.co.in/images/uploads/resta...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>8</th>\n",
+       "      <td>Indian Grill Room</td>\n",
+       "      <td>North Indian, Mughlai</td>\n",
+       "      <td>Suncity Business Tower,Golf Course Road, Gurgaon</td>\n",
+       "      <td>4.3</td>\n",
+       "      <td>https://im1.dineout.co.in/images/uploads/resta...</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                    Restaurant Name                        Cuisine  \\\n",
+       "0                   Castle Barbeque          Chinese, North Indian   \n",
+       "1                   Jungle Jamboree   North Indian, Asian, Italian   \n",
+       "2                        Cafe Knosh           Italian, Continental   \n",
+       "3                   Castle Barbeque          Chinese, North Indian   \n",
+       "4              The Barbeque Company          North Indian, Chinese   \n",
+       "5                       India Grill          North Indian, Italian   \n",
+       "6                    Delhi Barbeque                   North Indian   \n",
+       "7  The Monarch - Bar Be Que Village                   North Indian   \n",
+       "8                 Indian Grill Room          North Indian, Mughlai   \n",
+       "\n",
+       "                                            Location Rating  \\\n",
+       "0                     Connaught Place, Central Delhi    4.1   \n",
+       "1             3CS Mall,Lajpat Nagar - 3, South Delhi    3.9   \n",
+       "2  The Leela Ambience Convention Hotel,Shahdara, ...    4.3   \n",
+       "3             Pacific Mall,Tagore Garden, West Delhi    3.9   \n",
+       "4                 Gardens Galleria,Sector 38A, Noida      4   \n",
+       "5               Hilton Garden Inn,Saket, South Delhi    3.9   \n",
+       "6     Taurus Sarovar Portico,Mahipalpur, South Delhi    3.6   \n",
+       "7  Indirapuram Habitat Centre,Indirapuram, Ghaziabad    3.8   \n",
+       "8   Suncity Business Tower,Golf Course Road, Gurgaon    4.3   \n",
+       "\n",
+       "                                           Image URL  \n",
+       "0  https://im1.dineout.co.in/images/uploads/resta...  \n",
+       "1  https://im1.dineout.co.in/images/uploads/resta...  \n",
+       "2  https://im1.dineout.co.in/images/uploads/resta...  \n",
+       "3  https://im1.dineout.co.in/images/uploads/resta...  \n",
+       "4  https://im1.dineout.co.in/images/uploads/resta...  \n",
+       "5  https://im1.dineout.co.in/images/uploads/resta...  \n",
+       "6  https://im1.dineout.co.in/images/uploads/resta...  \n",
+       "7  https://im1.dineout.co.in/images/uploads/resta...  \n",
+       "8  https://im1.dineout.co.in/images/uploads/resta...  "
+      ]
+     },
+     "execution_count": 27,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "dineout = pd.DataFrame({'Restaurant Name':name, 'Cuisine':cuisine, 'Location':loc, 'Rating':rating, 'Image URL':image})\n",
+    "dineout"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e400f626",
+   "metadata": {},
+   "source": [
+    " **10) Write a python program to scrape the details of top publications from Google Scholar from\n",
+    "https://scholar.google.com/citations?view_op=top_venues&hl=en**\n",
+    "\n",
+    "**i) Rank**\n",
+    "\n",
+    "**ii) Publication**\n",
+    "\n",
+    "**iii) h5-index**\n",
+    "\n",
+    "**iv) h5-median**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 78,
+   "id": "fce98872",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "page = requests.get('https://scholar.google.com/citations?view_op=top_venues&hl=en')\n",
+    "page\n",
+    "soup = BeautifulSoup(page.content)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 79,
+   "id": "7cbbe43f",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "rank=[]\n",
+    "for i in soup.find_all(\"td\",class_=\"gsc_mvt_p\"):\n",
+    "    rank.append(i.text)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 80,
+   "id": "f06b449a",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "title=[]\n",
+    "for i in soup.find_all(\"td\",class_=\"gsc_mvt_t\"):\n",
+    "    title.append(i.text)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 81,
+   "id": "1a0ec3c2",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "k=[]\n",
+    "for i in soup.find_all(\"td\",class_=\"gsc_mvt_n\"):\n",
+    "    k.append(i.text)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 82,
+   "id": "c2f2270d",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "l=[]\n",
+    "h=[]\n",
+    "for i in range(len(k)):\n",
+    "    if(i%2)==0:\n",
+    "        l.append(k[i])\n",
+    "    else:\n",
+    "        h.append(k[i])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 83,
+   "id": "229deba6",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "del l[100:]\n",
+    "del h[100:]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 84,
+   "id": "49f9346e",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Rank</th>\n",
+       "      <th>Title</th>\n",
+       "      <th>h5-index</th>\n",
+       "      <th>h5-median</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "Empty DataFrame\n",
+       "Columns: [Rank, Title, h5-index, h5-median]\n",
+       "Index: []"
+      ]
+     },
+     "execution_count": 84,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df=pd.DataFrame({\"Rank\":rank,\"Title\":title,\"h5-index\":l,\"h5-median\":h})\n",
+    "df.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "21cd8dff",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "29ec5547",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.9.13"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
